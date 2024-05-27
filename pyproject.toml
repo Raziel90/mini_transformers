@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "mini-transformers"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+include = ["data/*.txt"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+scikit-learn = "^1.5.0"
+lightning = "^2.2.5"
+jax = "^0.4.28"
+tiktoken = "^0.7.0"
+tqdm = "^4.66.4"
+torchtyping = "^0.1.4"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.24.0"
+jupyter = "^1.0.0"
+mypy = "^1.10.0"
+pytest-xdist = "^3.6.1"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# [tool.poetry.scripts]
+# check = "bash -c 'poetry run mypy mini_transformers/ && poetry run flake8 mini_transformers/'"
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+strict = true
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+python_files = "*.py"
+python_classes = "Test*"
+python_functions = "test_*"
