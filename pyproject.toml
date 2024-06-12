@@ -2,19 +2,27 @@
 name = "mini-transformers"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Claudio Coppola <claudiocoppola90+minitransformers@gmail.com>"]
 include = ["data/*.txt"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
+torch = [
+    { version = "2.2.0", source = "pypi", markers = "sys_platform == 'darwin'"},
+    { version = "2.2.0", source = "pypi", markers = "platform_machine == 'aarch64' and sys_platform != 'darwin'"},
+    { version = "2.2.0", source = "pytorch_cpu", markers = "platform_machine == 'x86_64' and sys_platform != 'darwin'" },
+]
 python = "^3.10"
 scikit-learn = "^1.5.0"
-lightning = "^2.2.5"
 jax = "^0.4.28"
 tiktoken = "^0.7.0"
 tqdm = "^4.66.4"
 torchtyping = "^0.1.4"
 
+[[tool.poetry.source]]
+name = "pytorch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.24.0"
@@ -25,13 +33,28 @@ pytest-xdist = "^3.6.1"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.2.1"
+black = "^24.4.2"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-# [tool.poetry.scripts]
-# check = "bash -c 'poetry run mypy mini_transformers/ && poetry run flake8 mini_transformers/'"
+[tool.poetry.scripts]
+# check = "bash -c 'poetry run mypy mini_transformers && poetry run flake8 mini_transformers'"
+check = "scripts.run_checks:check_code"
 
 [tool.mypy]
 python_version = "3.10"
