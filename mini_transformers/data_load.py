@@ -79,8 +79,8 @@ class ShakespeareDataset(Dataset["ShakespeareDataset"]):
         self, train_split: Optional[float] = None
     ) -> Tuple[Subset["ShakespeareDataset"], Subset["ShakespeareDataset"]]:
         train_split = train_split or self.train_split
-        train_len = int(train_split * len(self))
+        train_len = int(train_split * len(self.data))
         training_set, validation_set = random_split(
-            self, [train_len, len(self) - train_len]
+            self, [train_len, len(self.data) - train_len]
         )
         return training_set, validation_set

@@ -1,7 +1,8 @@
 *.pyc
 *.DS_Store
+.coverage
 
-*.lock
+poetry.lock
 dist/*
 dist/mini_transformers-0.1.0.tar.gz
 dist/mini_transformers-0.1.0-py3-none-any.whl

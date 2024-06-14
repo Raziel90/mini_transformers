@@ -110,11 +110,9 @@ class MultiHeadedAttentionEmbedding(BaseEmbedding):
     def forward(self, idx: Tensor) -> Tensor:
 
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
-        tok_embeddings = self.token_embedding_table(
-            idx_cond.to(self.device)
-        )  # (B, T, n_embeds)
+        tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T).to(self.device)
+            torch.arange(0, T)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
@@ -154,11 +152,9 @@ class ResidualBlockAttentionEmbedding(BaseEmbedding):
     def forward(self, idx: Tensor) -> Tensor:
 
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
-        tok_embeddings = self.token_embedding_table(
-            idx_cond.to(self.device)
-        )  # (B, T, n_embeds)
+        tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T).to(self.device)
+            torch.arange(0, T)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
@@ -203,11 +199,9 @@ class GPT(BaseEmbedding):
     def forward(self, idx: Tensor) -> Tensor:
 
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
-        tok_embeddings = self.token_embedding_table(
-            idx_cond.to(self.device)
-        )  # (B, T, n_embeds)
+        tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T).to(self.device)
+            torch.arange(0, T)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
