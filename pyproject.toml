@@ -17,14 +17,13 @@ scikit-learn = "^1.5.0"
 jax = "^0.4.28"
 tiktoken = "^0.7.0"
 tqdm = "^4.66.4"
-torchtyping = "^0.1.4"
 
-lightning = {extras = ["extra"], version = "^2.2.5"}
 black = {extras = ["jupyter"], version = "^24.4.2"}
+lightning = "^2.3.0"
 [[tool.poetry.source]]
 name = "pytorch_cpu"
-# url = "https://download.pytorch.org/whl/cpu"
-url = "https://download.pytorch.org/whl/nightly/cpu"
+url = "https://download.pytorch.org/whl/cpu"
+# url = "https://download.pytorch.org/whl/nightly/cpu"
 priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
