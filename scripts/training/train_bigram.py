@@ -6,14 +6,18 @@ from importlib import resources
 from torch.utils.data import DataLoader
 import mini_transformers
 from mini_transformers.models.litbigram import LightningBigram
-from mini_transformers.models.embedding_model import GPT
+from mini_transformers.models.embedding_model import GPT, SimpleEmbedding
 from mini_transformers.data_load import ShakespeareDataset
 
 
 CONTEXT_LEN = 256
 BATCH_SIZE = 64
+TRANSFORMER_LAYERS = 6
+TRANSFORMER_HEADS = 6
+EMBEDDING_DIM = 384
 EPOCHS = 5
 
+DROPOUT_PROB = 0.2
 
 dataset = ShakespeareDataset(context_lenght=CONTEXT_LEN)
 vocabulary = dataset.vocabulary
@@ -35,11 +39,11 @@ valid_loader = DataLoader(
 
 gpt = GPT(
     vocab_size=len(vocabulary),
-    n_layers=6,
-    n_embeds=384,
-    n_heads=6,
+    n_layers=TRANSFORMER_LAYERS,
+    n_embeds=EMBEDDING_DIM,
+    n_heads=TRANSFORMER_HEADS,
     context_len=CONTEXT_LEN,
-    dropout=0.2,
+    dropout=DROPOUT_PROB,
 )
 
 bigram = LightningBigram(embedding_model=gpt, learning_rate=1e-3)
@@ -67,8 +71,6 @@ trainer = pl.Trainer(
     callbacks=[checkpoint_callback],
     logger=logger,
     log_every_n_steps=10,
-    accelerator="mps",
-    devices=1,
 )
 
 if __name__ == "__main__":
