@@ -1,8 +1,11 @@
-*.pyc
 *.DS_Store
+
+# Python temp files
+__pycache__/
+*.py[cod]
+*$py.class
 .coverage
 
-poetry.lock
 dist/*
 dist/mini_transformers-0.1.0.tar.gz
 dist/mini_transformers-0.1.0-py3-none-any.whl
