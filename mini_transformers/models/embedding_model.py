@@ -12,12 +12,6 @@ class BaseEmbedding(nn.Module):
     def __init__(self, vocab_size: int) -> None:
         super().__init__()
         self.vocab_size = vocab_size
-        if torch.cuda.is_available():
-            self.device = "cuda"
-        elif torch.backends.mps.is_available():
-            self.device = "mps"
-        else:
-            self.device = "cpu"
 
     def forward(self, idx: Tensor) -> Tensor:
         raise NotImplementedError()
@@ -201,7 +195,7 @@ class GPT(BaseEmbedding):
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
         tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T)
+            torch.arange(0, T).to(idx.device)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
