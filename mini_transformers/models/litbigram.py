@@ -9,8 +9,13 @@ import torch.nn.functional as F
 class LightningBigram(pl.LightningModule):
     def __init__(self, embedding_model: BaseEmbedding, learning_rate: float = 1e-3):
         super().__init__()
-        self.save_hyperparameters(ignore=["embedding_model"])
+        self.model_name = embedding_model.__class__.__name__
+        self.vocab_size = embedding_model.vocab_size
         self.learning_rate = learning_rate
+        
+        self.hparams["vocab_size"] = self.vocab_size
+        self.hparams["model_name"] = self.model_name
+        self.save_hyperparameters(ignore=["embedding_model"],)
 
         self.embedding = embedding_model
 
@@ -25,7 +30,7 @@ class LightningBigram(pl.LightningModule):
         top_k: Optional[int] = None,
     ) -> torch.Tensor:
 
-        idx = idx or torch.zeros((1, 1), dtype=torch.long)
+        idx = idx or torch.zeros((1, 1), dtype=torch.long, device=self.device)
         new_idx = idx.to(self.embedding.device)
         for _ in range(max_new_tokens):
             # execute on the last idx
