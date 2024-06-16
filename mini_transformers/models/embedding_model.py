@@ -14,7 +14,7 @@ class BaseEmbedding(nn.Module):
         self.vocab_size = vocab_size
 
     def forward(self, idx: Tensor) -> Tensor:
-        raise NotImplementedError()
+        raise NotImplementedError("BaseEmbedding should not be instantiated!")
 
     def _init_weights(self, module: nn.Module) -> None:
         if isinstance(module, nn.Linear):
@@ -31,6 +31,7 @@ class SimpleEmbedding(BaseEmbedding):
         super().__init__(vocab_size)
 
         self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+        self.apply(self._init_weights)
 
     def forward(self, idx: Tensor) -> Tensor:
 
@@ -47,6 +48,7 @@ class HeadEmbedding(BaseEmbedding):
         self.n_embeds = n_embeds
         self.token_embedding_table = nn.Embedding(vocab_size, n_embeds)
         self.lm_head = nn.Linear(n_embeds, vocab_size)
+        self.apply(self._init_weights)
 
     def forward(self, idx: Tensor) -> Tensor:
         tok_embeddings = self.token_embedding_table(idx)  # (B, T, vocab_size)
@@ -64,12 +66,13 @@ class PositionHeadEmbedding(BaseEmbedding):
         self.token_embedding_table = nn.Embedding(vocab_size, n_embeds)
         self.position_embedding_table = nn.Embedding(context_len, n_embeds)
         self.lm_head = nn.Linear(n_embeds, vocab_size)
+        self.apply(self._init_weights)
 
     def forward(self, idx: Tensor) -> Tensor:
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
         tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T)
+            torch.arange(0, T).to(idx.device)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
@@ -100,13 +103,14 @@ class MultiHeadedAttentionEmbedding(BaseEmbedding):
         self.token_embedding_table = nn.Embedding(vocab_size, n_embeds)
         self.position_embedding_table = nn.Embedding(context_len, n_embeds)
         self.lm_head = nn.Linear(n_embeds, vocab_size)
+        self.apply(self._init_weights)
 
     def forward(self, idx: Tensor) -> Tensor:
 
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
         tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T)
+            torch.arange(0, T).to(idx.device)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
@@ -142,13 +146,14 @@ class ResidualBlockAttentionEmbedding(BaseEmbedding):
             nn.LayerNorm(n_embeds),
             nn.Linear(n_embeds, vocab_size),
         )
+        self.apply(self._init_weights)
 
     def forward(self, idx: Tensor) -> Tensor:
 
         B, T = (idx_cond := idx[:, -self.context_len :]).shape
         tok_embeddings = self.token_embedding_table(idx_cond)  # (B, T, n_embeds)
         pos_embeddings = self.position_embedding_table(
-            torch.arange(0, T)
+            torch.arange(0, T).to(idx.device)
         )  # (T, n_embeds)
         x = (
             tok_embeddings + pos_embeddings
