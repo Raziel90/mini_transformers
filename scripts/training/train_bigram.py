@@ -4,10 +4,10 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import TensorBoardLogger
 from importlib import resources
 from torch.utils.data import DataLoader
+from mini_transformers.data_load import ShakespeareDataset
 import mini_transformers
 from mini_transformers.models.litbigram import LightningBigram
-from mini_transformers.models.embedding_model import GPT, SimpleEmbedding
-from mini_transformers.data_load import ShakespeareDataset
+from mini_transformers.models.embedding_model import GPT
 
 
 CONTEXT_LEN = 256
