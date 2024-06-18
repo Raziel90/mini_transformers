@@ -16,6 +16,7 @@ from mini_transformers.models.litbigram import LightningBigram
 import torch
 
 CONTEXT_LEN = 8
+BATCH_SIZE = 64
 
 
 @pytest.fixture(scope="module")
@@ -23,13 +24,12 @@ def train_val_dataloaders(
     request: pytest.FixtureRequest,
 ) -> tuple[Vocabulary, DataLoader[ShakespeareDataset], DataLoader[ShakespeareDataset]]:
 
-    batch_size = 10
     dataset = ShakespeareDataset(context_lenght=CONTEXT_LEN)
     vocabulary = dataset.vocabulary
     train_ds, valid_ds = dataset.train_valid_subsets()
     train_loader = DataLoader(
         train_ds,
-        batch_size=batch_size,
+        batch_size=BATCH_SIZE,
         shuffle=True,
         num_workers=8,
         persistent_workers=True,
@@ -37,7 +37,7 @@ def train_val_dataloaders(
     # train_loader.dataset.vocabulary
     valid_loader = DataLoader(
         valid_ds,
-        batch_size=batch_size,
+        batch_size=BATCH_SIZE,
         shuffle=False,
         num_workers=5,
         persistent_workers=True,
@@ -45,6 +45,7 @@ def train_val_dataloaders(
     return (vocabulary, train_loader, valid_loader)
 
 
+@pytest.mark.slow
 def test_roll_train_dataset(
     train_val_dataloaders: tuple[
         Vocabulary, DataLoader[ShakespeareDataset], DataLoader[ShakespeareDataset]
@@ -52,10 +53,17 @@ def test_roll_train_dataset(
 ) -> None:
     vocabulary, train_loader, val_loader = train_val_dataloaders
 
-    for _, _ in iter(train_loader):
-        pass
+    for X, y in iter(train_loader):
+        assert X.size(0) <= BATCH_SIZE
+        assert X.size(1) == CONTEXT_LEN
+        assert y.size(0) <= BATCH_SIZE
+        assert y.size(1) == CONTEXT_LEN
+
     for _, _ in iter(val_loader):
-        pass
+        assert X.size(0) <= BATCH_SIZE
+        assert X.size(1) == CONTEXT_LEN
+        assert y.size(0) <= BATCH_SIZE
+        assert y.size(1) == CONTEXT_LEN
 
 
 def test_base_embedding_error() -> None:
@@ -64,6 +72,7 @@ def test_base_embedding_error() -> None:
         embedding(torch.tensor([1, 2, 3]))
 
 
+@pytest.mark.slow
 def test_simple_embedding_training(
     train_val_dataloaders: tuple[
         Vocabulary, DataLoader[ShakespeareDataset], DataLoader[ShakespeareDataset]
@@ -77,6 +86,7 @@ def test_simple_embedding_training(
         max_epochs=1,
         callbacks=[],
         logger=False,
+        enable_checkpointing=False,
     )
     trainer.fit(
         model=bigram, train_dataloaders=train_loader, val_dataloaders=val_loader
@@ -97,6 +107,7 @@ def test_generate_simple_embedding(
     vocabulary.decode(generated.squeeze().tolist())
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "embedding_type",
     [
@@ -154,6 +165,7 @@ def test_models_bigram(
         overfit_batches=1,
         callbacks=[],
         logger=False,
+        enable_checkpointing=False,
     )
     trainer.fit(
         model=bigram, train_dataloaders=train_loader, val_dataloaders=val_loader
