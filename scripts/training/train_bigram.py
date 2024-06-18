@@ -67,7 +67,7 @@ with resources.path(mini_transformers, "checkpoints") as checkpoint_path:
 trainer = pl.Trainer(
     min_epochs=1,
     max_epochs=EPOCHS,
-    overfit_batches=0.001,
+    overfit_batches=1,
     callbacks=[checkpoint_callback],
     logger=logger,
     log_every_n_steps=10,
