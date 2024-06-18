@@ -64,15 +64,27 @@ class ShakespeareDataset(Dataset["ShakespeareDataset"]):
 
         x = self.data[index : index + self.context_length]
         y = self.data[index + 1 : index + self.context_length + 1]
-
         if y.size(0) < self.context_length:
             x = torch.hstack(
-                [x, torch.zeros((self.context_length - x.size(0)), dtype=torch.long)]
+                [
+                    x,
+                    torch.zeros(
+                        (self.context_length - x.size(0)),
+                        dtype=torch.long,
+                        device=x.device,
+                    ),
+                ]
             )
             y = torch.hstack(
-                [y, torch.zeros((self.context_length - y.size(0)), dtype=torch.long)]
+                [
+                    y,
+                    torch.zeros(
+                        (self.context_length - y.size(0)),
+                        dtype=torch.long,
+                        device=y.device,
+                    ),
+                ]
             )
-
         return x, y
 
     def train_valid_subsets(
